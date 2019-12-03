@@ -28,7 +28,7 @@ namespace Day1.UnitTests
         [InlineData(2, 4_738_549)]
         public void Day1(int puzzlePart, int expectedAnswer)
         {
-            int answer = ReadIntArrayFromFile($"day1_{puzzlePart}.txt")
+            int answer = ReadIntArrayFromFile($"day1.txt")
                             .Select(mass => puzzlePart == 1 
                                                 ? FuelRequired(mass)
                                                 : FuelRequired2(mass))
