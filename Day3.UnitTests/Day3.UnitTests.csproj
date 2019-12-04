@@ -24,11 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Day2\Day2.csproj" />
+    <ProjectReference Include="..\Day3\Day3.csproj" />
+    <ProjectReference Include="..\FileExtensions\FileExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="day2.txt">
+    <None Update="day3.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
