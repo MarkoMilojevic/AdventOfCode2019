@@ -23,18 +23,16 @@ namespace Day1.UnitTests
         public void FuelRequired2Tests(int mass, int expectedFuelRequired) =>
             Assert.Equal(expectedFuelRequired, FuelRequired2(mass));
 
-        [Theory]
-        [InlineData(1, 3_160_932)]
-        [InlineData(2, 4_738_549)]
-        public void Day1(int puzzlePart, int expectedAnswer)
+        [Fact]
+        public void Day1()
         {
-            int answer = ReadIntArrayFromFile($"day1.txt")
-                            .Select(mass => puzzlePart == 1 
-                                                ? FuelRequired(mass)
-                                                : FuelRequired2(mass))
-                            .Sum();
+            const int ExpectedFuelRequired = 3_160_932;
+            const int ExpectedFuelRequired2 = 4_738_549;
 
-            Assert.Equal(expectedAnswer, expectedAnswer);
+            int[] masses = ReadIntArrayFromFile("day1.txt");
+
+            Assert.Equal(ExpectedFuelRequired, masses.Select(mass => FuelRequired(mass)).Sum());
+            Assert.Equal(ExpectedFuelRequired2, masses.Select(mass => FuelRequired2(mass)).Sum());
         }
     }
 }

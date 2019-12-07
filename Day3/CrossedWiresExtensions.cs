@@ -2,12 +2,23 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using static System.Math;
 
 namespace Day3
 {
     public static class CrossedWiresExtensions
     {
-        public static int MinManhattanDistance(string trail1, string trail2)
+        public static int MinManhattanDistance(this List<WireIntersection> intersections) =>
+            intersections
+                .Select(wireIntersection => Abs(wireIntersection.Row) + Abs(wireIntersection.Column))
+                .Min();
+
+        public static int MinSignalDelay(this List<WireIntersection> intersections) =>
+            intersections
+                .Select(intersection => intersection.FirstWireTrailOrdinal + intersection.SecondWireTrailOrdinal)
+                .Min();
+
+        public static List<WireIntersection> Intersections(string trail1, string trail2)
         {
             if (trail1 is null)
                 throw new ArgumentNullException(nameof(trail1));
@@ -15,51 +26,65 @@ namespace Day3
             if (trail2 is null)
                 throw new ArgumentNullException(nameof(trail2));
 
-            (bool firstWirePresent, bool secondWirePresent)[][] grid = CreateGrid(size: 40_000);
+            List<WireTrail> firstWireTrails = trail1.Track();
+            List<WireTrail> secondWireTrails = trail2.Track();
 
-            grid.Track(trail1, (g, i, j) => g[i][j].firstWirePresent = true);
-            grid.Track(trail2, (g, i, j) => g[i][j].secondWirePresent = true);
+            List<WireIntersection> intersections = new List<WireIntersection>();
 
-            return grid
-                    .IntersectionsDistances()
-                    .Min();
-        }
-
-        private static (bool firstWirePresent, bool secondWirePresent)[][] CreateGrid(int size)
-        {
-            (bool firstWirePresent, bool secondWirePresent)[][] grid = new (bool, bool)[size][];
-
-            for (int i = 0; i < grid.Length; i++)
-                grid[i] = new (bool, bool)[size];
-
-            return grid;
-        }
-
-        private static void Track(
-            this (bool firstWirePresent, bool secondWirePresent)[][] grid,
-            string trail,
-            Action<(bool firstWirePresent, bool secondWirePresent)[][], int, int> mark)
-        {
-            string[] wireTrails = trail.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-            int i = grid.Length / 2;
-            int j = grid.Length / 2;
-            foreach (string wireTrail in wireTrails)
+            HashSet<(int row, int column)> intersectionCells = new HashSet<(int row, int column)>();
+            Dictionary<(int row, int column), WireTrail> wireTrailsByPosition = new Dictionary<(int, int), WireTrail>();
+            foreach (WireTrail firstWireTrail in firstWireTrails)
             {
-                string direction = wireTrail.Substring(0, 1);
-                int trailLength = int.Parse(wireTrail.Substring(1, wireTrail.Length - 1), CultureInfo.InvariantCulture);                
-                (int i, int j) weight = direction.Weight();
-
-                for (int k = 0; k < trailLength; k++)
+                intersectionCells.Add((firstWireTrail.Row, firstWireTrail.Column));
+                if (!wireTrailsByPosition.ContainsKey((firstWireTrail.Row, firstWireTrail.Column)))
                 {
-                    i += weight.i;
-                    j += weight.j;
-                    mark(grid, i, j);
+                    wireTrailsByPosition.Add((firstWireTrail.Row, firstWireTrail.Column), firstWireTrail);
                 }
             }
+
+            foreach (WireTrail secondWireTrail in secondWireTrails)
+            {
+                if (intersectionCells.Contains((secondWireTrail.Row, secondWireTrail.Column)))
+                {
+                    intersections.Add(new WireIntersection(
+                        secondWireTrail.Row,
+                        secondWireTrail.Column,
+                        wireTrailsByPosition[(secondWireTrail.Row, secondWireTrail.Column)].Ordinal,
+                        secondWireTrail.Ordinal));
+                }
+            }
+
+            return intersections;
         }
 
-        private static (int i, int j) Weight(this string direction)
+        private static List<WireTrail> Track(this string trail)
+        {
+            List<WireTrail> wireTrails = new List<WireTrail>();
+
+            string[] tracks = trail.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            int row = 0;
+            int column = 0;
+            int ordinal = 0;
+            foreach (string track in tracks)
+            {
+                string direction = track.Substring(0, 1);
+                int trailLength = int.Parse(track.Substring(1, track.Length - 1), CultureInfo.InvariantCulture);
+                (int rowIncrement, int columnIncrement) = direction.DirectionIncrements();
+
+                for (int i = 0; i < trailLength; i++)
+                {
+                    row += rowIncrement;
+                    column += columnIncrement;
+                    ordinal++;
+
+                    wireTrails.Add(new WireTrail(row, column, ordinal));
+                }
+            }
+
+            return wireTrails;
+        }
+
+        private static (int i, int j) DirectionIncrements(this string direction)
         {
             switch (direction)
             {
@@ -77,23 +102,6 @@ namespace Day3
             }
 
             throw new ArgumentException("Unknown direction", nameof(direction));
-        }
-
-        private static List<int> IntersectionsDistances(this (bool firstWirePresent, bool secondWirePresent)[][] grid)
-        {
-            List<int> intersections = new List<int>();
-            for (int i = 0; i < grid.Length; i++)
-            {
-                for (int j = 0; j < grid.Length; j++)
-                {
-                    if (grid[i][j].firstWirePresent && grid[i][j].secondWirePresent)
-                    {
-                        intersections.Add(Math.Abs(i - grid.Length / 2) + Math.Abs(j - grid.Length / 2));
-                    }
-                }
-            }
-
-            return intersections;
         }
     }
 }
