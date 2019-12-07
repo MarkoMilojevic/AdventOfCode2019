@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -26,6 +26,12 @@
   <ItemGroup>
     <ProjectReference Include="..\Day5\Day5.csproj" />
     <ProjectReference Include="..\FileExtensions\FileExtensions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="day5.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
