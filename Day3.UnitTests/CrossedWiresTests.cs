@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Xunit;
 using static Day3.CrossedWiresExtensions;
 using static FileExtensions.FileExtensions;
@@ -19,8 +20,14 @@ namespace Day3.UnitTests
             "R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51",
             "U98,R91,D20,R16,D67,R40,U7,R15,U6,R7",
             135)]
-        public void MinManhattanDistanceTests(string trail1, string trail2, int expectedMin) =>
-            Assert.Equal(expectedMin, Intersections(trail1, trail2).MinManhattanDistance());
+        public void MinManhattanDistanceTests(string trail1, string trail2, int expectedMin)
+        {
+            int minManhattanDistance = Intersections(trail1, trail2)
+                                        .MinManhattanDistance();
+
+            Assert.Equal(expectedMin, minManhattanDistance);
+        }
+
         [Theory]
         [InlineData(
             "R75,D30,R83,U83,L12,D49,R71,U7,L72",
@@ -30,8 +37,13 @@ namespace Day3.UnitTests
             "R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51",
             "U98,R91,D20,R16,D67,R40,U7,R15,U6,R7",
             410)]
-        public void MinSignalDelayTests(string trail1, string trail2, int expectedMin) =>
-            Assert.Equal(expectedMin, Intersections(trail1, trail2).MinSignalDelay());
+        public void MinSignalDelayTests(string trail1, string trail2, int expectedMin)
+        {
+            int minSignalDelay = Intersections(trail1, trail2)
+                                    .MinSignalDelay();
+
+            Assert.Equal(expectedMin, minSignalDelay);
+        }
 
         [Fact]
         public void Day3()
@@ -42,7 +54,7 @@ namespace Day3.UnitTests
             string[] trails = ReadStringArrayFromFile("day3.txt");
             string trail1 = trails[0];
             string trail2 = trails[1];
-            var intersections = Intersections(trail1, trail2);
+            List<WireIntersection> intersections = Intersections(trail1, trail2);
 
             Assert.Equal(ExpectedMinManhattanDistance, intersections.MinManhattanDistance());
             Assert.Equal(ExpectedMinSignalDelay, intersections.MinSignalDelay());
