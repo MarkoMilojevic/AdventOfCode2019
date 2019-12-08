@@ -5,7 +5,7 @@ namespace Day2.Parsers
 {
     public interface IOpcodeParser
     {
-        int Opcode(int value);
-        IReadOnlyList<ParameterMode> ParametersModes(List<int> intcodeProgram, int instructionAddress);
+        int Opcode(int opcode);
+        IReadOnlyList<ParameterMode> ParametersModes(int opcode);
     }
 }

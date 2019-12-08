@@ -9,6 +9,6 @@ namespace Day2.Factories
         IExecutable Create(
             List<int> intcodeProgram,
             int instructionAddress,
-            IOpcodeParser parametersModesParser);
+            IOpcodeParser opcodeParser);
     }
 }

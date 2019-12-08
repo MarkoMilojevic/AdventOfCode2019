@@ -7,6 +7,7 @@ namespace Day2.Instructions
 {
     public class Opcode
     {
+        private readonly int _opcodeValue;
         private readonly IOpcodeParser _opcodeParser;
 
         public int Value { get; }
@@ -17,12 +18,14 @@ namespace Day2.Instructions
                 throw new ArgumentNullException(nameof(opcodeParser));
             
             _opcodeParser = opcodeParser;
-            Value = _opcodeParser.Opcode(value);
+            _opcodeValue = value;
+
+            Value = _opcodeParser.Opcode(_opcodeValue);
         }
 
         public int[] Parameters(List<int> intcodeProgram, int instructionAddress)
         {
-            IReadOnlyList<ParameterMode> parametersModes = _opcodeParser.ParametersModes(intcodeProgram, instructionAddress);
+            IReadOnlyList<ParameterMode> parametersModes = _opcodeParser.ParametersModes(_opcodeValue);
 
             return Enumerable
                 .Range(instructionAddress + 1, parametersModes.Count)
