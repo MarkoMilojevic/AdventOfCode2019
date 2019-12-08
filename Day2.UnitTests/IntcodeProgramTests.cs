@@ -1,4 +1,7 @@
+using Day2.Factories;
+using Day2.Parsers;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -9,10 +12,12 @@ namespace Day2.UnitTests
 {
     public class IntcodeProgramTests
     {
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
-        public IntcodeProgramTests(ITestOutputHelper output) =>
-            this.output = output;
+        public IntcodeProgramTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
 
         [Theory]
         [InlineData("1,0,0,0,99", 0, 2)]
@@ -21,9 +26,14 @@ namespace Day2.UnitTests
         [InlineData("1,1,1,4,99,5,6,0,99", 0, 30)]
         public void ProcessTests(string intcodeProgram, int position, int expectedValue)
         {
-            int[] gravityAssistProgram = intcodeProgram.Process();
+            IntcodeProgram program = new IntcodeProgram(
+                intcodeProgram,
+                new DefaultInstructionFactory(),
+                new ImplicitOpcodeParser());
 
-            Assert.Equal(expectedValue, gravityAssistProgram[position]);
+            List<int> output = program.Run();
+
+            Assert.Equal(expectedValue, output[position]);
         }
 
         [Theory]
@@ -31,9 +41,8 @@ namespace Day2.UnitTests
         [InlineData(0, 99, 0, 99, 19_690_720)]
         public void Day2(int nounStart, int nounEnd, int verbStart, int verbEnd, int expectedOutput)
         {
-            string intcodeProgram = File.ReadAllText("day2.txt");
 
-            int[] integers = intcodeProgram
+            int[] intcodeProgram = File.ReadAllText("day2.txt")
                                 .Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
                                 .Select(number => int.Parse(number, CultureInfo.InvariantCulture))
                                 .ToArray();
@@ -42,14 +51,19 @@ namespace Day2.UnitTests
             {
                 for (int verb = verbStart; verb <= verbEnd; verb++)
                 {
-                    integers[1] = noun;
-                    integers[2] = verb;
-                    intcodeProgram = string.Join(',', integers);
+                    intcodeProgram[1] = noun;
+                    intcodeProgram[2] = verb;
 
-                    int[] gravityAssistProgram = intcodeProgram.Process();
-                    if (gravityAssistProgram[0] == expectedOutput)
+                    IntcodeProgram program = new IntcodeProgram(
+                        intcodeProgram,
+                        new DefaultInstructionFactory(),
+                        new ImplicitOpcodeParser());
+
+                    List<int> programOutput = program.Run();
+
+                    if (programOutput[0] == expectedOutput)
                     {
-                        output.WriteLine($"noun: {noun}, verb: {verb}");
+                        _output.WriteLine($"noun: {noun}, verb: {verb}");
                         return;
                     }
                 }

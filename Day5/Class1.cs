@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Day5
+﻿namespace Day5
 {
     public class Class1
     {
