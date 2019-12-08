@@ -2,7 +2,7 @@
 {
     public class HaltInstruction : IExecutable
     {
-        public int ParametersCount => 3;
+        public int ParametersCount => 0;
         public bool Halt => true;
 
         public void Execute()

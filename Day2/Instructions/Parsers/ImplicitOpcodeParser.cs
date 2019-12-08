@@ -9,21 +9,21 @@ namespace Day2.Parsers
         public int Opcode(int value) =>
             value;
 
-        public IReadOnlyList<ParameterMode> ParametersModes(int opcode)
+        public IReadOnlyList<ParameterMode> ParametersModes(int opcodeValue)
         {
-            int opcodeValue = Opcode(opcode);
+            int opcode = Opcode(opcodeValue);
 
             return
-                opcodeValue == 99
+                opcode == 99
                     ? new List<ParameterMode>()
-                : opcodeValue == 1 || opcodeValue == 2
+                : opcode == 1 || opcode == 2
                     ? new List<ParameterMode>
                     {
                         ParameterMode.Position,
                         ParameterMode.Position,
                         ParameterMode.Immediate
                     }
-                : throw new ArgumentException("Unknown instruction opcode.", nameof(opcodeValue));
+                : throw new ArgumentException("Unknown instruction opcode.", nameof(opcode));
         }
     }
 }
