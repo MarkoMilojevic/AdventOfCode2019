@@ -45,8 +45,8 @@ namespace Day2
             {
                 instruction = _instructionFactory.Create(
                     output,
-                    currentInstructionAddress,
-                    _opcodeParser);
+                    _opcodeParser.Opcode(output[currentInstructionAddress]),
+                    Parameters(output, currentInstructionAddress));
 
                 instruction.Execute();
 
@@ -55,6 +55,27 @@ namespace Day2
             while (!instruction.Halt);
 
             return output;
+        }
+
+        /// <remarks>
+        /// If we were to introduce new parameter modes,
+        /// this would need to be abstracted away.
+        /// </remarks>
+        private int[] Parameters(List<int> intcodeProgram, int instructionAddress)
+        {
+            int opcodeValue = intcodeProgram[instructionAddress];
+            IReadOnlyList<int> parametersModes = _opcodeParser.ParametersModes(opcodeValue);
+
+            return Enumerable
+                .Range(instructionAddress + 1, parametersModes.Count)
+                .Zip(
+                    parametersModes,
+                    (paramAddress, mode) => mode == 1
+                                                ? intcodeProgram[paramAddress]
+                                            : mode == 0
+                                                ? intcodeProgram[intcodeProgram[paramAddress]]
+                                            : throw new ArgumentOutOfRangeException(nameof(mode)))
+                .ToArray();
         }
     }
 }

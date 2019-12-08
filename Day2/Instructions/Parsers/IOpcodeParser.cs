@@ -6,6 +6,6 @@ namespace Day2.Parsers
     public interface IOpcodeParser
     {
         int Opcode(int opcode);
-        IReadOnlyList<ParameterMode> ParametersModes(int opcode);
+        IReadOnlyList<int> ParametersModes(int opcode);
     }
 }

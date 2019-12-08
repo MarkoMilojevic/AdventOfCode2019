@@ -1,5 +1,4 @@
 ﻿using Day2.Instructions;
-using Day2.Parsers;
 using System;
 using System.Collections.Generic;
 
@@ -9,19 +8,10 @@ namespace Day2.Factories
     {
         public IExecutable Create(
             List<int> intcodeProgram,
-            int instructionAddress,
-            IOpcodeParser opcodeParser)
+            int opcode,
+            params int[] parameters)
         {
-            if (intcodeProgram is null)
-                throw new ArgumentNullException(nameof(intcodeProgram));
-
-            if (opcodeParser is null)
-                throw new ArgumentNullException(nameof(opcodeParser));
-
-            Opcode opcode = new Opcode(intcodeProgram[instructionAddress], opcodeParser);
-            int[] parameters = opcode.Parameters(intcodeProgram, instructionAddress);
-
-            switch (opcode.Value)
+            switch (opcode)
             {
                 case 1:
                     return new AdditionInstruction(parameters[0], parameters[1], parameters[2], intcodeProgram);
@@ -33,7 +23,7 @@ namespace Day2.Factories
                     return new HaltInstruction();
 
                 default:
-                    throw new ArgumentException("Unknown instruction opcode.", nameof(opcode.Value));
+                    throw new ArgumentException("Unknown instruction opcode.", nameof(opcode));
             }
         }
     }
